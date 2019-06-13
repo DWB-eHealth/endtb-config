@@ -73,7 +73,7 @@ select
 	MAX( IF( tc.TreatmentMonth = 'M19', tc.CultureResults, NULL )) as 'Cult M19',
 	MAX( IF( ts.TreatmentMonth = 'M20', ts.SmearResults, NULL )) as 'Smear M20',
 	MAX( IF( tc.TreatmentMonth = 'M20', tc.CultureDateofCollection, NULL )) as 'Date M20',
-	MAX( IF( tc.TreatmentMonth = 'M10', tc.CultureResults, NULL )) as 'Cult M20',
+	MAX( IF( tc.TreatmentMonth = 'M20', tc.CultureResults, NULL )) as 'Cult M20',
 	MAX( IF( ts.TreatmentMonth = 'M21', ts.SmearResults, NULL )) as 'Smear M21',
 	MAX( IF( tc.TreatmentMonth = 'M21', tc.CultureDateofCollection, NULL )) as 'Date M21',
 	MAX( IF( tc.TreatmentMonth = 'M21', tc.CultureResults, NULL )) as 'Cult M21',
