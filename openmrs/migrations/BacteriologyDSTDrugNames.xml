@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet id="ENDTB-201906121202" author="Vinay, Vineela">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM concept_name WHERE name IN
+                    ("Bacteriology, Moxifloxacin 0.25 μg/ml results",
+                    "Bacteriology, Moxifloxacin 1.0 μg/ml results",
+                    "Bacteriology, Ofloxacin 2.0 μg/ml results",
+                    "Bacteriology, Ofloxacin 8.0 μg/ml results",
+                    "Bacteriology, Isoniazid 5.0 μg/ml results")
+                AND concept_name_type ="FULLY_SPECIFIED";
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding new concepts</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, "Bacteriology, Moxifloxacin 0.25 μg/ml results", "Moxifloxacin 0.25 μg/ml" , 'Coded','Misc', FALSE);
+            set @concept1_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, "Bacteriology, Moxifloxacin 1.0 μg/ml results", "Moxifloxacin 1.0 μg/ml" , 'Coded','Misc', FALSE);
+            set @concept2_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, "Bacteriology, Ofloxacin 2.0 μg/ml results", "Ofloxacin 2.0 μg/ml" , 'Coded','Misc', FALSE);
+            set @concept3_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, "Bacteriology, Ofloxacin 8.0 μg/ml results", "Ofloxacin 8.0 μg/ml" , 'Coded','Misc', FALSE);
+            set @concept4_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, "Bacteriology, Isoniazid 5.0 μg/ml results", "Isoniazid 5.0 μg/ml" , 'Coded','Misc', FALSE);
+            set @concept5_id = @concept_id;
+
+            SELECT concept_id INTO @susceptible_concept_id FROM concept_name WHERE name = 'Susceptible' AND concept_name_type="FULLY_SPECIFIED";
+            SELECT concept_id INTO @resistant_concept_id FROM concept_name WHERE name = 'Resistant' AND concept_name_type="FULLY_SPECIFIED";
+            SELECT concept_id INTO @indeterminate_concept_id FROM concept_name WHERE name = 'Indeterminate' AND concept_name_type="FULLY_SPECIFIED";
+
+            call add_concept_answer (@concept1_id, @susceptible_concept_id, 1);
+            call add_concept_answer (@concept1_id, @resistant_concept_id, 2);
+            call add_concept_answer (@concept1_id, @indeterminate_concept_id, 3);
+            call add_concept_answer (@concept2_id, @susceptible_concept_id, 1);
+            call add_concept_answer (@concept2_id, @resistant_concept_id, 2);
+            call add_concept_answer (@concept2_id, @indeterminate_concept_id, 3);
+            call add_concept_answer (@concept3_id, @susceptible_concept_id, 1);
+            call add_concept_answer (@concept3_id, @resistant_concept_id, 2);
+            call add_concept_answer (@concept3_id, @indeterminate_concept_id, 3);
+            call add_concept_answer (@concept4_id, @susceptible_concept_id, 1);
+            call add_concept_answer (@concept4_id, @resistant_concept_id, 2);
+            call add_concept_answer (@concept4_id, @indeterminate_concept_id, 3);
+            call add_concept_answer (@concept5_id, @susceptible_concept_id, 1);
+            call add_concept_answer (@concept5_id, @resistant_concept_id, 2);
+            call add_concept_answer (@concept5_id, @indeterminate_concept_id, 3);
+
+            SELECT concept_source_id INTO @abbreviation_source_id FROM concept_reference_source WHERE name = 'Abbreviation';
+
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (4,'Mfx 0.25',@abbreviation_source_id,uuid(),now()),
+            (4,'Mfx 1.0',@abbreviation_source_id,uuid(),now()),
+            (4,'Ofx 2.0',@abbreviation_source_id,uuid(),now()),
+            (4,'Ofx 8.0',@abbreviation_source_id,uuid(),now()),
+            (4,'H 5.0',@abbreviation_source_id,uuid(),now());
+
+            INSERT INTO concept_reference_map (concept_reference_term_id, concept_map_type_id,creator,date_created,concept_id,uuid)
+                (SELECT ct.concept_reference_term_id,1,1,now(),cn.concept_id,uuid()
+                FROM  concept_name cn,
+                    concept_reference_term ct,
+                    concept_reference_source cs
+                WHERE ct.code = 'Mfx 0.25'
+                    AND ct.concept_source_id = cs.concept_source_id
+                    AND cs.name='Abbreviation'
+                    AND cn.name= 'Bacteriology, Moxifloxacin 0.25 μg/ml results'
+                    AND cn.concept_name_type='FULLY_SPECIFIED');
+
+            INSERT INTO concept_reference_map (concept_reference_term_id, concept_map_type_id,creator,date_created,concept_id,uuid)
+                (SELECT ct.concept_reference_term_id,1,1,now(),cn.concept_id,uuid()
+                FROM  concept_name cn,
+                    concept_reference_term ct,
+                    concept_reference_source cs
+                WHERE ct.code = 'Mfx 1.0'
+                    AND ct.concept_source_id = cs.concept_source_id
+                    AND cs.name='Abbreviation'
+                    AND cn.name= 'Bacteriology, Moxifloxacin 1.0 μg/ml results'
+                    AND cn.concept_name_type='FULLY_SPECIFIED');
+
+            INSERT INTO concept_reference_map (concept_reference_term_id, concept_map_type_id,creator,date_created,concept_id,uuid)
+                (SELECT ct.concept_reference_term_id,1,1,now(),cn.concept_id,uuid()
+                FROM  concept_name cn,
+                    concept_reference_term ct,
+                    concept_reference_source cs
+                WHERE ct.code = 'Ofx 2.0'
+                    AND ct.concept_source_id = cs.concept_source_id
+                    AND cs.name='Abbreviation'
+                    AND cn.name= 'Bacteriology, Ofloxacin 2.0 µg/ml results'
+                    AND cn.concept_name_type='FULLY_SPECIFIED');
+
+            INSERT INTO concept_reference_map (concept_reference_term_id, concept_map_type_id,creator,date_created,concept_id,uuid)
+                (SELECT ct.concept_reference_term_id,1,1,now(),cn.concept_id,uuid()
+                FROM  concept_name cn,
+                    concept_reference_term ct,
+                    concept_reference_source cs
+                WHERE ct.code = 'Ofx 8.0'
+                    AND ct.concept_source_id = cs.concept_source_id
+                    AND cs.name='Abbreviation'
+                    AND cn.name= 'Bacteriology, Ofloxacin 8.0 µg/ml results'
+                    AND cn.concept_name_type='FULLY_SPECIFIED');
+
+            INSERT INTO concept_reference_map (concept_reference_term_id, concept_map_type_id,creator,date_created,concept_id,uuid)
+                (SELECT ct.concept_reference_term_id,1,1,now(),cn.concept_id,uuid()
+                FROM  concept_name cn,
+                    concept_reference_term ct,
+                    concept_reference_source cs
+                WHERE ct.code = 'H 5.0'
+                    AND ct.concept_source_id = cs.concept_source_id
+                    AND cs.name='Abbreviation'
+                    AND cn.name= 'Bacteriology, Isoniazid 5.0 μg/ml results"'
+                    AND cn.concept_name_type='FULLY_SPECIFIED');
+
+            SELECT concept_source_id INTO @export_source_id FROM concept_reference_source WHERE name = 'EndTB-Export';
+
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (4,'moxi25res_dst',@export_source_id,uuid(),now()),
+            (4,'moxi1res_dst',@export_source_id,uuid(),now()),
+            (4,'ofx2res_dst',@export_source_id,uuid(),now()),
+            (4,'ofx8res_dst',@export_source_id,uuid(),now()),
+            (4,'res5ing_dst',@export_source_id,uuid(),now());
+
+            call create_reference_mapping('Bacteriology, Moxifloxacin 0.25 µg/ml results','moxi25res_dst');
+            call create_reference_mapping('Bacteriology, Moxifloxacin 1.0 µg/ml results','moxi1res_dst');
+            call create_reference_mapping('Bacteriology, Ofloxacin 2.0 µg/ml results','ofx2res_dst');
+            call create_reference_mapping('Bacteriology, Ofloxacin 8.0 µg/ml results','ofx8res_dst');
+            call create_reference_mapping('Bacteriology, Isoniazid 5.0 µg/ml result','res5ing_dst');
+
+
+            SELECT concept_id INTO @parent_concept_id FROM concept_name WHERE name = 'Bacteriology, DST drug name' AND concept_name_type="FULLY_SPECIFIED";
+            SELECT MAX(sort_weight) INTO @ca_sort_weight FROM concept_answer WHERE concept_id=@parent_concept_id;
+            call add_concept_answer (@parent_concept_id, @concept1_id, @ca_sort_weight + 1);
+            call add_concept_answer (@parent_concept_id, @concept2_id, @ca_sort_weight + 2);
+            call add_concept_answer (@parent_concept_id, @concept3_id, @ca_sort_weight + 3);
+            call add_concept_answer (@parent_concept_id, @concept4_id, @ca_sort_weight + 4);
+            call add_concept_answer (@parent_concept_id, @concept5_id, @ca_sort_weight + 5);
+
+            SELECT concept_id INTO @concept_set_id FROM concept_name WHERE name = 'Bacteriology, DST result details' AND concept_name_type="FULLY_SPECIFIED";
+
+            SELECT concept_id into @other_drug_concept_id from concept_name where name = "Bacteriology, Other drug details" AND concept_name_type="FULLY_SPECIFIED";
+
+            SELECT sort_weight INTO @cs_sort_weight FROM concept_set WHERE concept_id=@other_drug_concept_id;
+
+            call add_concept_set_members (@concept_set_id, @concept1_id, @cs_sort_weight + 0);
+            call add_concept_set_members (@concept_set_id, @concept2_id, @cs_sort_weight + 1);
+            call add_concept_set_members (@concept_set_id, @concept3_id, @cs_sort_weight + 2);
+            call add_concept_set_members (@concept_set_id, @concept4_id, @cs_sort_weight + 3);
+            call add_concept_set_members (@concept_set_id, @concept5_id, @cs_sort_weight + 4);
+
+            UPDATE concept_set SET sort_weight=@cs_sort_weight + 5 where concept_set=@concept_set_id and concept_id = @other_drug_concept_id;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

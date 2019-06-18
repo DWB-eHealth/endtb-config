@@ -2538,5 +2538,7 @@
         update concept_name set name = "Tenofovir/Emtricitabine (TDF/FTC) 300/200mg" where name = "Tenofovir/fumarate (tdf/ftc) 300mg/200mg" and locale = 'en' and voided = 0;
     </sql>
     </changeSet>
+    <include file ="BacteriologyDSTDrugNames.xml"/>
+
 
 </databaseChangeLog>

@@ -339,7 +339,12 @@
             "Bacteriology, Bedaquiline result",
             "Bacteriology, Delamanid result",
             "Bacteriology, Linezolid result",
-            "Bacteriology, Clofazamine result"
+            "Bacteriology, Clofazamine result",
+            "Bacteriology, Moxifloxacin 0.25 μg/ml results",
+            "Bacteriology, Moxifloxacin 1.0 μg/ml results",
+            "Bacteriology, Ofloxacin 2.0 μg/ml results",
+            "Bacteriology, Ofloxacin 8.0 μg/ml results",
+            "Bacteriology, Isoniazid 5.0 μg/ml results"
           ]
         }
       },
