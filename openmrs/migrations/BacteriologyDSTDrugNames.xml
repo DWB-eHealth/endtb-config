@@ -112,7 +112,7 @@
                 WHERE ct.code = 'H 5.0'
                     AND ct.concept_source_id = cs.concept_source_id
                     AND cs.name='Abbreviation'
-                    AND cn.name= 'Bacteriology, Isoniazid 5.0 μg/ml results"'
+                    AND cn.name= 'Bacteriology, Isoniazid 5.0 μg/ml results'
                     AND cn.concept_name_type='FULLY_SPECIFIED');
 
             SELECT concept_source_id INTO @export_source_id FROM concept_reference_source WHERE name = 'EndTB-Export';
@@ -128,7 +128,7 @@
             call create_reference_mapping('Bacteriology, Moxifloxacin 1.0 µg/ml results','moxi1res_dst');
             call create_reference_mapping('Bacteriology, Ofloxacin 2.0 µg/ml results','ofx2res_dst');
             call create_reference_mapping('Bacteriology, Ofloxacin 8.0 µg/ml results','ofx8res_dst');
-            call create_reference_mapping('Bacteriology, Isoniazid 5.0 µg/ml result','res5ing_dst');
+            call create_reference_mapping('Bacteriology, Isoniazid 5.0 µg/ml results','res5ing_dst');
 
 
             SELECT concept_id INTO @parent_concept_id FROM concept_name WHERE name = 'Bacteriology, DST drug name' AND concept_name_type="FULLY_SPECIFIED";
