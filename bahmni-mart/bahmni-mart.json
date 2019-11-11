@@ -82,7 +82,11 @@
         "updateOn": "encounter_id",
         "eventCategory": "Encounter",
         "openmrsTableName": "encounter"
-      }
+      },
+      "columnsToIgnore": [
+        "Image",
+        "Video"
+      ]
     },
     {
       "name": "MetaData Dictionary",
