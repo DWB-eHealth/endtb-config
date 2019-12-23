@@ -28,7 +28,11 @@
             "primaryRelative",
             "familyNameLocal",
             "givenNameLocal",
-            "middleNameLocal"
+            "middleNameLocal",
+            "nationalIdentificationNumber",
+            "patientAddress",
+            "patientAddressLine2",
+            "telephoneNumber"
           ]
         },
         {
@@ -40,7 +44,8 @@
             "family_name_prefix",
             "family_name",
             "family_name2",
-            "family_name_suffix"
+            "family_name_suffix",
+            "birthdate"
           ]
         }
       ]
