@@ -2558,5 +2558,103 @@
             <column name="uuid" valueComputed=" uuid() "/>
         </insert>
     </changeSet>
+    <changeSet id="ENDTB-201911211436" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("Pretomanid (Pa)")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "Baseline, List of drugs taken for more than a month");
+            </sqlCheck>
+        </preConditions>
+        <comment>"creating a new concept and Adding Pretomanid (Pa) to the list of drugs taken for more than a month"</comment>
+        <sql>
+
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Pretomanid (Pa)', 'Pretomanid (Pa)', 'N/A', 'Drug', false);
+            <!--            call add_other_drugs ("Pretomanid (Pa)","Pretomanid (Pa)","Tablet(s)");-->
+
+            insert into drug (concept_id,name,dosage_form,creator,date_created,uuid) values
+            ((select concept_id from concept_name where name ="Pretomanid (Pa)"and concept_name_type = 'FULLY_SPECIFIED' and locale='en' and voided = 0),
+            "Pretomanid (Pa)",
+            (select concept_id from concept_name where name ="Tablet(s)" and concept_name_type = 'FULLY_SPECIFIED' and locale='en' and voided = 0),
+            (select user_id from users where username ="superman"),
+            now(),
+            uuid());
+
+
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @concept_id from concept_name where name = "Baseline, List of drugs taken for more than a month" and
+            concept_name_type = 'FULLY_SPECIFIED' and locale = 'en' and voided = 0;
+
+            select max(sort_weight) into @weight from concept_answer where concept_id = (select concept_id from concept_name where name = 'Baseline, List of drugs taken for more than a month' and concept_name_type = 'FULLY_SPECIFIED' and locale = 'en' and voided = 0);
+
+            select concept_id into @child1_concept_id from concept_name where name = "Pretomanid (Pa)" and concept_name_type =
+            'FULLY_SPECIFIED' and locale = 'en' and voided = 0;
+
+            call add_concept_answer(@concept_id, @child1_concept_id, @weight+1);
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (4,"59",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("Pretomanid (Pa)","59");
+
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911211447" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                (select count(*) from concept_name where name = "Baseline, List of drugs taken for more than a month");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Removing the description of the drugs taken for more than a month"</comment>
+        <sql>
+            update concept_description set description = "" where concept_id = (select concept_id from concept_name where name = "Baseline, List of drugs taken for more than a month")
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911261527" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("dolutegravir (Tivicay)")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "Baseline, Drugs used in ARV treatment");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding a new concept and adding dolutegravir (Tivicay) to Baseline, Drugs used in ARV treatment"</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'dolutegravir (Tivicay)', 'Dolutegravir (DTG)', 'N/A', 'Drug', false);
+
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+
+            select concept_id into @concept_id from concept_name where name = "Baseline, Drugs used in ARV treatment" and
+            concept_name_type = 'FULLY_SPECIFIED' and locale = 'en' and voided = 0;
+
+            select max(sort_weight) into @weight from concept_answer where concept_id = (select concept_id from concept_name where name = 'Baseline, Drugs used in ARV treatment' and concept_name_type = 'FULLY_SPECIFIED' and locale = 'en' and voided = 0);
+
+            select concept_id into @child1_concept_id from concept_name where name = "dolutegravir (Tivicay)" and concept_name_type =
+            'FULLY_SPECIFIED' and locale = 'en' and voided = 0;
+
+            call add_concept_answer(@concept_id, @child1_concept_id, @weight+1);
+            call CREATE_REFERENCE_MAPPING("dolutegravir (Tivicay)","61");
+        </sql>
+    </changeSet>
+
+
     <include file ="BacteriologyDSTDrugNames.xml"/>
 </databaseChangeLog>
