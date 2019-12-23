@@ -466,34 +466,52 @@ Bahmni.ConceptSet.FormConditions.rules = {      //This is a constant that Bahmni
         return conditions;
     },
     '6m PTO, 6 month post treatment outcome': function (formName, formFieldValues) {
-        var conceptToEnable_dateOfDeath = "6m PTO, Date of death post treatment";
-        var conceptToEnable_causeOfDeath = "6m PTO, Suspected primary cause of death";
-        var conceptToEnable_reason = "6m PTO, Reasons for no post treatment followup";
-        var conceptToEnable_commentsOnNoFup = "6m PTO, Comments on no post treatment followup";
-        var conceptToEnable_transfer = "6m PTO, Transfer out post treatment";
-        var conditions = {enable: [], disable: []};
-        var conditionConcept = formFieldValues['6m PTO, 6 month post treatment outcome'];
-        var conceptToEnable_surgeryType = "6m PTO, Type of surgery related to post treatment death";
-        var conceptToEnable_nonTBCauseOfDeath = "6m PTO, Non TB cause of post treatment death";
-        if (conditionConcept == "Died post treatment") {
-            conditions.enable.push(conceptToEnable_dateOfDeath, conceptToEnable_causeOfDeath);
-        } else {
-            conditions.disable.push(conceptToEnable_dateOfDeath, conceptToEnable_causeOfDeath, conceptToEnable_surgeryType, conceptToEnable_nonTBCauseOfDeath);
-        }
-        var conceptToEnable_otherReason = "6m PTO, Other reasons for no post treatment followup";
-        if (conditionConcept == "LTFU post treatment") {
-            conditions.enable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup);
-        } else {
-            conditions.disable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup, conceptToEnable_otherReason)
-        }
-        var conceptToEnable_onYes = "6m PTO, Transferred to where post treatment";
-        var conceptToEnable_onNo = "6m PTO, Other reasons for no post treatment outcome";
-        if (conditionConcept == "Not Evaluated") {
-            conditions.enable.push(conceptToEnable_transfer);
-        } else {
-            conditions.disable.push(conceptToEnable_transfer, conceptToEnable_onYes, conceptToEnable_onNo)
-        }
-        return conditions;
+            var conceptToEnable_dateOfDeath = "6m PTO, Date of death post treatment";
+            var conceptToEnable_causeOfDeath = "6m PTO, Suspected primary cause of death";
+            var conceptToEnable_reason = "6m PTO, Reasons for no post treatment followup";
+            var conceptToEnable_commentsOnNoFup = "6m PTO, Comments on no post treatment followup";
+            var conceptToEnable_transfer = "6m PTO, Transfer out post treatment";
+            var conditions = {enable: [], disable: []};
+            var conditionConcept = formFieldValues['6m PTO, 6 month post treatment outcome'];
+            var conceptToEnable_surgeryType = "6m PTO, Type of surgery related to post treatment death";
+            var conceptToEnable_nonTBCauseOfDeath = "6m PTO, Non TB cause of post treatment death";
+            var conceptToEnable_no_recurrence = "Criteria If no recurrence post treatment";
+            var conceptToEnable_recurrence = "If recurrence, criteria for recurrence";
+
+            if(conditionConcept == "No change in outcome since end of treatment ( no recurrence)"){
+                conditions.enable.push (conceptToEnable_no_recurrence);
+            }
+            else {
+                conditions.disable.push (conceptToEnable_no_recurrence);
+            }
+
+            if(conditionConcept == "Relapse or recurrence"){
+                conditions.enable.push (conceptToEnable_recurrence);
+            }
+            else {
+                conditions.disable.push (conceptToEnable_recurrence);
+            }
+            if (conditionConcept == "Died post treatment") {
+                conditions.enable.push(conceptToEnable_dateOfDeath, conceptToEnable_causeOfDeath);
+            }
+            else {
+                conditions.disable.push(conceptToEnable_dateOfDeath, conceptToEnable_causeOfDeath, conceptToEnable_surgeryType, conceptToEnable_nonTBCauseOfDeath);
+            }
+            var conceptToEnable_otherReason = "6m PTO, Other reasons for no post treatment followup";
+
+            if (conditionConcept == "LTFU post treatment") {
+                conditions.enable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup);
+            } else {
+                conditions.disable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup, conceptToEnable_otherReason,conceptToEnable_recurrence,conceptToEnable_no_recurrence);
+            }
+            var conceptToEnable_onYes = "6m PTO, Transferred to where post treatment";
+            var conceptToEnable_onNo = "6m PTO, Other reasons for no post treatment outcome";
+            if (conditionConcept == "Not Evaluated") {
+                conditions.enable.push(conceptToEnable_transfer);
+            } else {
+                conditions.disable.push(conceptToEnable_transfer, conceptToEnable_onYes, conceptToEnable_onNo)
+            }
+            return conditions;
     },
     '6m PTO, Suspected primary cause of death': function (formName, formFieldValues) {
         var conceptToEnable_surgeryType = "6m PTO, Type of surgery related to post treatment death";

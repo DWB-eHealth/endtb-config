@@ -3605,6 +3605,174 @@
             call CREATE_REFERENCE_MAPPING("If other cohort, specify","cohort_oth");
         </sql>
     </changeSet>
+    <changeSet id="ENDTB-201911291604" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from concept_view where concept_full_name='6 month Post Treatment Outcome Template';
+            </sqlCheck>
+        </preConditions>
+        <comment>Renaming the name of the 6 months post treatment outcome to Post Treatment outcome </comment>
+        <sql>
+            set @set_concept_id = 0;
+            select concept_id into @set_concept_id from concept_view where concept_full_name='6 month Post Treatment Outcome Template';
+            update concept_name set name='Post treatment outcome' where concept_id=@set_concept_id AND concept_name_type='SHORT';
+        </sql>
+    </changeSet>
 
+    <changeSet id="ENDTB-201911291617" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from concept_view where concept_full_name='6m PTO, 6 month post treatment outcome date';
+            </sqlCheck>
+        </preConditions>
+        <comment>Renaming the name of the 6 months post treatment outcome date to post Treatment outcome date</comment>
+        <sql>
+            set @set_concept_id = 0;
+            select concept_id into @set_concept_id from concept_view where concept_full_name='6m PTO, 6 month post treatment outcome date';
+            update concept_name set name='Post treatment outcome date' where concept_id=@set_concept_id AND concept_name_type='SHORT';
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911291630" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from concept_view where concept_full_name='6m PTO, 6 month post treatment outcome';
+            </sqlCheck>
+        </preConditions>
+        <comment>Renaming the name of the 6 months post treatment outcome to Post Treatment outcome</comment>
+        <sql>
+            set @set_concept_id = 0;
+            select concept_id into @set_concept_id from concept_view where concept_full_name='6m PTO, 6 month post treatment outcome';
+            update concept_name set name='Post treatment outcome' where concept_id=@set_concept_id AND concept_name_type='SHORT';
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201912012003" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='Criteria If no recurrence post treatment';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding Criteria If no recurrence post treatment coded concept to openmrs</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Criteria If no recurrence post treatment', 'Criteria if no recurrence post treatment', 'Coded', 'misc', false);
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"outcome_post_norec",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("Criteria If no recurrence post treatment","outcome_post_norec");
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201912018027" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='No sign or symptoms of TB and culture negative';
+            </sqlCheck>
+        </preConditions>
+        <comment> Added If no recurrence post treatment set members to the openmrs</comment>
+        <sql>
+            set @concept1_id = 0;
+            set @concept2_id = 0;
+
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'No sign or symptoms of TB and culture negative', 'No sign or symptoms of TB and culture negative' , 'N/A', 'misc', false);
+            set @concept1_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'No signs or symptoms of TB and no culture result', 'No signs or symptoms of TB and no culture result' , 'N/A', 'misc', false);
+            set @concept2_id = @concept_id;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'Criteria If no recurrence post treatment';
+
+            call add_concept_answer (@set_concept_id,@concept1_id,1);
+            call add_concept_answer (@set_concept_id,@concept2_id,2);
+
+            call CREATE_REFERENCE_MAPPING('No sign or symptoms of TB and culture negative','1');
+            call CREATE_REFERENCE_MAPPING('No signs or symptoms of TB and no culture result','2');
+
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="ENDTB-201912012118" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='If recurrence, criteria for recurrence';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding If recurrence, criteria for recurrence coded concept to openmrs</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'If recurrence, criteria for recurrence', 'Criteria if recurrence post treatment', 'Coded', 'misc', false);
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"outcome_post_rec",37,uuid(),now());
+            INSERT INTO concept_description (concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid) VALUES ((select concept_id from concept_name where name = 'If recurrence, criteria for recurrence' and concept_name_type="FULLY_SPECIFIED"),'1= Two positive cultures (taken on different days) irrespective of the presence of clinical signs or symptoms of TB 2= One positive culture with clinical signs or symptoms or radiographic deterioration','en',1,now(),NULL,NULL,uuid());
+            call CREATE_REFERENCE_MAPPING("If recurrence, criteria for recurrence","outcome_post_rec");
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201912018031" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='Two positive cultures irrespective of signs or symptoms of TB';
+            </sqlCheck>
+        </preConditions>
+        <comment> Added If no recurrence post treatment set members to the openmrs</comment>
+        <sql>
+            set @concept1_id = 0;
+            set @concept2_id = 0;
+
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Two positive cultures irrespective of signs or symptoms of TB', 'Two positive cultures irrespective of signs or symptoms of TB' , 'N/A', 'misc', false);
+            set @concept1_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'One positive culture with clinical signs or symptoms or radiographic deterioration', 'One positive culture with clinical signs or symptoms or radiographic deterioration' , 'N/A', 'misc', false);
+            set @concept2_id = @concept_id;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'If recurrence, criteria for recurrence';
+
+            call add_concept_answer (@set_concept_id,@concept1_id,1);
+            call add_concept_answer (@set_concept_id,@concept2_id,2);
+
+            call CREATE_REFERENCE_MAPPING('Two positive cultures irrespective of signs or symptoms of TB','1');
+            call CREATE_REFERENCE_MAPPING('One positive culture with clinical signs or symptoms or radiographic deterioration','2');
+
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201912012132" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("Criteria If no recurrence post treatment")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "6 month Post Treatment Outcome Template");
+            </sqlCheck>
+        </preConditions>
+        <comment>Adding the new concept Criteria if no recurrence post treatment to the 6 month post treatment outcome template form</comment>
+        <sql>
+            set @set_concept_id = 0;
+            set @concept_set_member_id = 0;
+            set @concept_set_members_id = 0;
+            select concept_id into @set_concept_id from concept_view where concept_full_name = '6 month Post Treatment Outcome Template';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'Criteria If no recurrence post treatment';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,1);
+            select concept_id into @concept_set_members_id from concept_view where concept_full_name = 'If recurrence, criteria for recurrence';
+            call add_concept_set_members (@set_concept_id,@concept_set_members_id,2);
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201912051414" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='No change in outcome since end of treatment ( no recurrence)';
+            </sqlCheck>
+        </preConditions>
+        <comment> Changing the wording of a concept to openmrs</comment>
+        <sql>
+            set @concept_id=0;
+            select concept_id into @concept_id from concept_view where concept_full_name ='No change in outcome since end of treatment';
+            update concept_name set name='No change in outcome since end of treatment ( no recurrence)' where concept_id=@concept_id;
+
+        </sql>
+    </changeSet>
     <include file ="BacteriologyDSTDrugNames.xml"/>
 </databaseChangeLog>
