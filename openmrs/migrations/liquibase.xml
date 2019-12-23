@@ -3176,7 +3176,435 @@
 
         </sql>
     </changeSet>
+    <changeSet id="ENDTB-201911191720" author="Babitha" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult = "0">
+                SELECT COUNT(*) from concept_name where name = 'withdrawn';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding withdrawn concept to openmrs </comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'withdrawn', 'withdrawn', 'N/A', 'misc', false);
 
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911191725" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("withdrawn")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "TI, Has the endTB Observational Study Consent Form been explained and signed");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding Answer to "TI, Has the endTB Observational Study Consent Form been explained and signed"</comment>
+        <sql>
+
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @concept_id from concept_name where name = "TI, Has the endTB Observational Study Consent Form been explained and signed " and
+            concept_name_type = 'FULLY_SPECIFIED' and locale = 'en' and voided = 0;
+
+            select max(sort_weight) into @weight from concept_answer where concept_id = (select concept_id from concept_name where name = 'TI, Has the endTB Observational Study Consent Form been explained and signed ' and concept_name_type = 'FULLY_SPECIFIED' and locale = 'en' and voided = 0);
+
+            select concept_id into @child1_concept_id from concept_name where name = "withdrawn" and concept_name_type =
+            'FULLY_SPECIFIED' and locale = 'en' and voided = 0;
+
+            call add_concept_answer(@concept_id, @child1_concept_id, @weight+1);
+
+
+            INSERT INTO concept_description (concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid)
+            VALUES ((select concept_id from concept_name where name = "TI, Has the endTB Observational Study Consent Form been explained and signed"),'0=No, patient has been asked but refused, 1=Yes, patient has been asked and accepted, 2= pending- patient not asked yet, answer not known 3= not possible- patient cannot be asked as dead or lost to followup before consent could be asked 4= patient initially gave consent but later withdrew consent for all data to be used','en',1,now(),NULL,NULL,uuid());
+
+            call CREATE_REFERENCE_MAPPING('withdrawn','4');
+        </sql>
+    </changeSet>
+    <changeSet id="ENDTB-201911201201" author="Babitha" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult = "0">
+                SELECT COUNT(*) from concept_name where name = 'TI, Date of endTB consent withdrawal';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding Date of endTB consent withdrawal to openmrs </comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'TI, Date of endTB consent withdrawal', 'Date of endTB consent withdrawal', 'Date', 'misc', false);
+
+            INSERT INTO concept_description(concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid)
+            VALUES ((select concept_id from concept_name where name = 'TI, Date of endTB consent withdrawal' and concept_name_type="FULLY_SPECIFIED"),'If a patient has initially given consent and then subsequently withdraws that consent, please record the date that the patient withdraws consent','en',1,now(),NULL,NULL,uuid());
+
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"d_endtb_consent_with",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("TI, Date of endTB consent withdrawal","d_endtb_consent_with")
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911201224" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='Eligible for all oral short regimen study?';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding Is patient eligible for all oral shorter regimen study concept set to openmrs</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'TI, Is patient eligible for all oral shorter regimen study?', 'Eligible for all oral short regimen study?', 'Coded', 'misc', false);
+            INSERT INTO concept_description (concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid)
+            VALUES ((select concept_id from concept_name where name = "TI, Is patient eligible for all oral shorter regimen study?"),'Is the patient eligible for treatment with an oral shorter regimen according to the study protocol?','en',1,now(),NULL,NULL,uuid());
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"elig_orshort_study",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("TI, Is patient eligible for all oral shorter regimen study?","elig_orshort_study");
+
+        </sql>
+    </changeSet>
+    <changeSet id="ENDTB-201911201259" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                select count(*) from concept_name where name ='Eligible for all oral short regimen study?';
+            </sqlCheck>
+        </preConditions>
+        <comment> Added Is patient eligible for all oral shorter regimen study? set members to the openmrs</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'No, the patient is not eligible for all oral shorter regimen study', 'No', 'N/A', 'misc', false);
+            set @concept1_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Yes, the patient eligible for all oral shorter regimen study?', 'Yes', 'N/A', 'misc', false);
+            set @concept2_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Unknown, about the patient eligibility for all oral shorter regimen study?', 'Unknown' ,'N/A', 'misc', false);
+            set @concept3_id = @concept_id;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, Is patient eligible for all oral shorter regimen study?';
+
+            call add_concept_answer (@set_concept_id,@concept1_id,0);
+            call add_concept_answer (@set_concept_id,@concept2_id,1);
+            call add_concept_answer (@set_concept_id,@concept3_id,99);
+
+            select concept_id into @value1_concept_id from concept_view where concept_full_name = 'False';
+            select concept_id into @value2_concept_id from concept_view where concept_full_name = 'True';
+            select concept_id into @value3_concept_id from concept_view where concept_full_name = 'Unknown';
+
+            update obs set value_coded = @concept1_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value1_concept_id;
+            update obs set value_coded = @concept2_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value2_concept_id;
+            update obs set value_coded = @concept3_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value3_concept_id;
+
+            delete from concept_answer where answer_concept in ( @value2_concept_id, @value1_concept_id, @value3_concept_id ) and concept_id=@set_concept_id;
+
+            call CREATE_REFERENCE_MAPPING('No, the patient is not eligible for all oral shorter regimen study','0');
+            call CREATE_REFERENCE_MAPPING('Yes, the patient eligible for all oral shorter regimen study?','1');
+            call CREATE_REFERENCE_MAPPING('Unknown, about the patient eligibility for all oral shorter regimen study?','99');
+        </sql>
+    </changeSet>
+    <changeSet id="ENDTB-201911221634" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("TI, Is patient eligible for all oral shorter regimen study?")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "TI, New treatment eligibility");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding TI, Is patient eligible for all oral shorter regimen study? to the TI, New treatment eligibility"</comment>
+        <sql>
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, New treatment eligibility';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'TI, Is patient eligible for all oral shorter regimen study?';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,8);
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="ENDTB-201911201504" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='Decision after the all oral shorter regimen Study Consent Form been explained?';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding Decision after the all oral shorter regimen Study Consent Form been explained concept set to openmrs</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'TI, Decision after the all oral shorter regimen Study Consent Form been explained?', 'Consent for short oral study decision?', 'Coded', 'misc', false);
+            INSERT INTO concept_description (concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid)
+            VALUES ((select concept_id from concept_name where name = "TI, Decision after the all oral shorter regimen Study Consent Form been explained?"),'0=Refused- patient was asked but does not want to be in the study and did not sign the consent form, 1= accepted, patient has been asked and agrees to participate in the study and has signed consent form, 2= pending: either patient not asked yet, or patient has not yet decided or not yet signed, answer not known 3= Other: this includes when it is not possible to ask the patient because dead or lost to followup before consent could be asked 4= Withdrawn: patient initially gave consent but later withdrew consent for all data to be used','en',1,now(),NULL,NULL,uuid());
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"consent_orshort",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("TI, Decision after the all oral shorter regimen Study Consent Form been explained?","consent_orshort")
+        </sql>
+    </changeSet>
+
+
+
+    <changeSet id="ENDTB-201911221644" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("TI, Decision after the all oral shorter regimen Study Consent Form been explained ?")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "TI, New treatment eligibility");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding TI, Decision after the all oral shorter regimen Study Consent Form been explained ? to the TI, New treatment eligibility"</comment>
+        <sql>
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, New treatment eligibility';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'TI, Decision after the all oral shorter regimen Study Consent Form been explained?';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,9);
+        </sql>
+    </changeSet>
+
+
+
+    <changeSet id="ENDTB-201911201508" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='Refused, is the Decision after the all oral shorter regimen Study Consent Form been explained';
+            </sqlCheck>
+        </preConditions>
+        <comment> Added Decision after the all oral shorter regimen Study Consent Form been explained  set members to the openmrs</comment>
+        <sql>
+            set @concept1_id = 0;
+            set @concept2_id = 0;
+            set @concept3_id = 0;
+            set @concept4_id = 0;
+            set @concept5_id = 0;
+
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Refused, is the Decision after the all oral shorter regimen Study Consent Form been explained', 'Refused', 'N/A', 'misc', false);
+            set @concept1_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Accepted, is the Decision after the all oral shorter regimen Study Consent Form been explained', 'Accepted', 'N/A', 'misc', false);
+            set @concept2_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Pending, is the Decision after the all oral shorter regimen Study Consent Form been explained', 'Pending' ,'N/A', 'misc', false);
+            set @concept3_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Other, is the Decision after the all oral shorter regimen Study Consent Form been explained', 'Other' ,'N/A', 'misc', false);
+            set @concept4_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Withdrawn, is the Decision after the all oral shorter regimen Study Consent Form been explained', 'Withdrawn' ,'N/A', 'misc', false);
+            set @concept5_id = @concept_id;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, Decision after the all oral shorter regimen Study Consent Form been explained?';
+
+            call add_concept_answer (@set_concept_id,@concept1_id,1);
+            call add_concept_answer (@set_concept_id,@concept2_id,2);
+            call add_concept_answer (@set_concept_id,@concept3_id,3);
+            call add_concept_answer (@set_concept_id,@concept4_id,4);
+            call add_concept_answer (@set_concept_id,@concept5_id,5);
+
+            select concept_id into @value1_concept_id from concept_view where concept_full_name = 'Rejected';
+            select concept_id into @value2_concept_id from concept_view where concept_full_name = 'Accepted';
+            select concept_id into @value3_concept_id from concept_view where concept_full_name = 'Pending';
+            select concept_id into @value4_concept_id from concept_view where concept_full_name = 'Other';
+            select concept_id into @value5_concept_id from concept_view where concept_full_name = 'Withdrawn';
+
+            update obs set value_coded = @concept1_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value1_concept_id;
+            update obs set value_coded = @concept2_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value2_concept_id;
+            update obs set value_coded = @concept3_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value3_concept_id;
+            update obs set value_coded = @concept4_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value4_concept_id;
+            update obs set value_coded = @concept5_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value5_concept_id;
+
+            delete from concept_answer where answer_concept in ( @value1_concept_id, @value2_concept_id, @value3_concept_id, @value4_concept_id, @value5_concept_id) and concept_id=@set_concept_id;
+
+            call CREATE_REFERENCE_MAPPING('Refused, is the Decision after the all oral shorter regimen Study Consent Form been explained','0');
+            call CREATE_REFERENCE_MAPPING('Accepted, is the Decision after the all oral shorter regimen Study Consent Form been explained','1');
+            call CREATE_REFERENCE_MAPPING('Pending, is the Decision after the all oral shorter regimen Study Consent Form been explained','2');
+            call CREATE_REFERENCE_MAPPING('Other, is the Decision after the all oral shorter regimen Study Consent Form been explained','3');
+            call CREATE_REFERENCE_MAPPING('Withdrawn, is the Decision after the all oral shorter regimen Study Consent Form been explained','4');
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911201913" author="Babitha" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult = "0">
+                SELECT COUNT(*) from concept_name where name = 'TI, If other reason for consent form status, specify';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding If other reason for consent form status, specify concept to openmrs </comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'TI, If other reason for consent form status, specify', 'Other reasons consent', 'Text', 'misc', false);
+            INSERT INTO concept_description (concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid)
+            VALUES ((select concept_id from concept_name where name = 'TI, If other reason for consent form status, specify' and concept_name_type="FULLY_SPECIFIED"),'Example of other reasons that the patient has not accepted and signed consent form include that the patient died or was lost to followup before being asked consent','en',1,now(),NULL,NULL,uuid());
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"consent_orshort_oth",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("TI, If other reason for consent form status, specify","consent_orshort_oth");
+
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="ENDTB-201911221646" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("TI, If other reason for consent form status, specify")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "TI, New treatment eligibility");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding TI, If other reason for consent form status, specify to the TI, New treatment eligibility"</comment>
+        <sql>
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, New treatment eligibility';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'TI, If other reason for consent form status, specify';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,10);
+        </sql>
+    </changeSet>
+
+
+
+    <changeSet id="ENDTB-201911201945" author="Babitha" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult = "0">
+                SELECT COUNT(*) from concept_name where name = 'TI, Date of oral shorter regimen consent withdrawal';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding Date of oral shorter regimen consent withdrawal concept to openmrs </comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'TI, Date of oral shorter regimen consent withdrawal', 'Date oral short study consent withdrawal', 'Date', 'misc', false);
+            INSERT INTO concept_description (concept_id,description,locale,creator,date_created,changed_by,date_changed,uuid)
+            VALUES ((select concept_id from concept_name where name = 'TI, Date of oral shorter regimen consent withdrawal' and concept_name_type="FULLY_SPECIFIED"),'If a patient has initially given consent and then subsequently withdraws that consent, please record the date that the patient withdraws consent','en',1,now(),NULL,NULL,uuid());
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"d_orshort_consent_with",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("TI, Date of oral shorter regimen consent withdrawal","d_orshort_consent_with")
+
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="ENDTB-201911221648" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("TI, Date of oral shorter regimen consent withdrawal")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "TI, New treatment eligibility");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding TI, Date of oral shorter regimen consent withdrawal to the TI, New treatment eligibility"</comment>
+        <sql>
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, New treatment eligibility';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'TI, Date of oral shorter regimen consent withdrawal';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,11);
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="ENDTB-201911202002" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='To what cohort or cohorts does this patient belong ( chose all that apply)';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding To what cohort or cohorts does this patient belong ( chose all that apply) concept set to openmrs</comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'To what cohort or cohorts does this patient belong ( chose all that apply)', 'To what cohort(s) does the patient belong?', 'Coded', 'misc', false);
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (1,"cohort",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("To what cohort or cohorts does this patient belong ( chose all that apply)","cohort");
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911202005" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_name where name ='endTB cohort, is the cohort that the patient belongs to';
+            </sqlCheck>
+        </preConditions>
+        <comment> Added To what cohort or cohorts does this patient belong ( chose all that apply) set members to the openmrs</comment>
+        <sql>
+            set @concept1_id = 0;
+            set @concept2_id = 0;
+            set @concept3_id = 0;
+            set @concept4_id = 0;
+            set @concept5_id = 0;
+
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'endTB cohort, is the cohort that the patient belongs to', 'endTB cohort' , 'N/A', 'misc', false);
+            set @concept1_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'non endTB cohort, is the cohort that the patient belongs to', 'non endTB cohort' , 'N/A', 'misc', false);
+            set @concept2_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'shorter regimen cohort, is the cohort that the patient belongs to', 'shorter regimen cohort' ,'N/A', 'misc', false);
+            set @concept3_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'hepatitis C cohort, is the cohort that the patient belongs to', 'hepatitis C cohort' ,'N/A', 'misc', false);
+            set @concept4_id = @concept_id;
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'Other, is the cohort that the patient belongs to', 'Other' ,'N/A', 'misc', false);
+            set @concept5_id = @concept_id;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'To what cohort or cohorts does this patient belong ( chose all that apply)';
+
+            call add_concept_answer (@set_concept_id,@concept1_id,1);
+            call add_concept_answer (@set_concept_id,@concept2_id,2);
+            call add_concept_answer (@set_concept_id,@concept3_id,3);
+            call add_concept_answer (@set_concept_id,@concept4_id,4);
+            call add_concept_answer (@set_concept_id,@concept5_id,5);
+
+            select concept_id into @value1_concept_id from concept_view where concept_full_name = 'endTB cohort';
+            select concept_id into @value2_concept_id from concept_view where concept_full_name = 'non endTB cohort';
+            select concept_id into @value3_concept_id from concept_view where concept_full_name = 'shorter regimen cohort';
+            select concept_id into @value4_concept_id from concept_view where concept_full_name = 'hepatitis C cohort';
+            select concept_id into @value5_concept_id from concept_view where concept_full_name = 'Other';
+
+            update obs set value_coded = @concept1_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value1_concept_id;
+            update obs set value_coded = @concept2_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value2_concept_id;
+            update obs set value_coded = @concept3_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value3_concept_id;
+            update obs set value_coded = @concept4_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value4_concept_id;
+            update obs set value_coded = @concept5_id where concept_id = @set_concept_id and voided = 0 and value_coded = @value5_concept_id;
+
+            delete from concept_answer where answer_concept in ( @value1_concept_id, @value2_concept_id, @value3_concept_id, @value4_concept_id, @value5_concept_id) and concept_id=@set_concept_id;
+
+            call CREATE_REFERENCE_MAPPING('endTB cohort, is the cohort that the patient belongs to','1');
+            call CREATE_REFERENCE_MAPPING('non endTB cohort, is the cohort that the patient belongs to','2');
+            call CREATE_REFERENCE_MAPPING('shorter regimen cohort, is the cohort that the patient belongs to','3');
+            call CREATE_REFERENCE_MAPPING('hepatitis C cohort, is the cohort that the patient belongs to','4');
+            call CREATE_REFERENCE_MAPPING('Other, is the cohort that the patient belongs to','99');
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911202101" author="Babitha" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult = "0">
+                SELECT COUNT(*) from concept_name where name = 'If other cohort, specify';
+            </sqlCheck>
+        </preConditions>
+        <comment> Adding If other cohort, specify concept to openmrs </comment>
+        <sql>
+            call add_concept(@concept_id, @concept_name_short_id, @concept_name_full_id, 'If other cohort, specify', '', 'Text', 'misc', false);
+            INSERT INTO concept_reference_term (creator,code,concept_source_id,uuid,date_created) VALUES
+            (4,"cohort_oth",37,uuid(),now());
+            call CREATE_REFERENCE_MAPPING("If other cohort, specify","cohort_oth");
+        </sql>
+    </changeSet>
 
     <include file ="BacteriologyDSTDrugNames.xml"/>
 </databaseChangeLog>

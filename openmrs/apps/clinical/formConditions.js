@@ -1122,6 +1122,71 @@ Bahmni.ConceptSet.FormConditions.rules = {      //This is a constant that Bahmni
             conditions.disable.push("HTI, Other reasons to start DAA")
         }
         return conditions;
-    }
+    },    'To what cohort or cohorts does this patient belong ( chose all that apply)': function(formName, formFieldValues){
+             var conceptToEnable = ["If other cohort, specify"]
+             debugger;
+             var conditions = {enable: [], disable: []};
+             var conditionConcept = formFieldValues['To what cohort or cohorts does this patient belong ( chose all that apply)'];
+             if(conditionConcept == 'Other, is the cohort that the patient belongs to'){
+                 conditions.enable = conceptToEnable
+             } else{
+                 conditions.disable = conceptToEnable
+             }
+             return conditions;
+         },
+         'TI, Has the Treatment with New Drugs Consent Form been explained and signed': function(formName, formFieldValues){
+             var conceptToEnable = ["TI, Has the endTB Observational Study Consent Form been explained and signed"]
+             debugger;
+             var conditions = {enable: [], disable: []};
+             var conditionConcept = formFieldValues['TI, Has the Treatment with New Drugs Consent Form been explained and signed'];
+             if(conditionConcept =='True'){
+                 conditions.enable = conceptToEnable
+             } else{
+                 conditions.disable = conceptToEnable
+             }
+             return conditions;
+         },
+         'TI, Has the endTB Observational Study Consent Form been explained and signed': function(formName, formFieldValues){
+             var conceptToEnable = ["TI, Date of endTB consent withdrawal"]
+             var conditions = {enable: [], disable: []};
+             var conditionConcept = formFieldValues['TI, Has the endTB Observational Study Consent Form been explained and signed'];
+             if(conditionConcept == 'withdrawn'){
+                 conditions.enable = conceptToEnable
+             }else{
+                 conditions.disable = conceptToEnable
+             }
+             return conditions;
+         },
+         'TI, Is patient eligible for all oral shorter regimen study?': function(formName, formFieldValues){
+             var conceptToEnable = ["TI, Decision after the all oral shorter regimen Study Consent Form been explained?","TI, If other reason for consent form status, specify"]
+             var conditions = {enable: [], disable: []};
+             var conditionConcept = formFieldValues['TI, Is patient eligible for all oral shorter regimen study?'];
+             if(conditionConcept == 'Yes, the patient eligible for all oral shorter regimen study?'){
+                 conditions.enable = conceptToEnable
+             }else{
+                 conditions.disable = conceptToEnable
+             }
+             return conditions;
+         },
+         'TI, Decision after the all oral shorter regimen Study Consent Form been explained?': function(formName, formFieldValues){
+             var conceptToEnable = ["TI, Date of oral shorter regimen consent withdrawal"]
+             var conceptToEnable1 = ["TI, If other reason for consent form status, specify"]
+             var conditions = {enable: [], disable: []};
+             var conditionConcept = formFieldValues['TI, Decision after the all oral shorter regimen Study Consent Form been explained?'];
+             if(conditionConcept != null){
+                 if(conditionConcept == 'Withdrawn, is the Decision after the all oral shorter regimen Study Consent Form been explained'){
+                     conditions.enable = conceptToEnable
+                     conditions.disable = conceptToEnable1
+                 }else if(conditionConcept == 'Other, is the Decision after the all oral shorter regimen Study Consent Form been explained')
+                 {
+                     conditions.enable = conceptToEnable1
+                     conditions.disable = conceptToEnable
+                 }
+             }
+             else{
+                 conditions.disable.push(conceptToEnable, conceptToEnable1);
+             }
+             return conditions;
+         }
 
 };
