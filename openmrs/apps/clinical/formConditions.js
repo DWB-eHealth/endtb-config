@@ -502,7 +502,7 @@ Bahmni.ConceptSet.FormConditions.rules = {      //This is a constant that Bahmni
             if (conditionConcept == "LTFU post treatment") {
                 conditions.enable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup);
             } else {
-                conditions.disable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup, conceptToEnable_otherReason,conceptToEnable_recurrence,conceptToEnable_no_recurrence);
+                conditions.disable.push(conceptToEnable_reason, conceptToEnable_commentsOnNoFup, conceptToEnable_otherReason);
             }
             var conceptToEnable_onYes = "6m PTO, Transferred to where post treatment";
             var conceptToEnable_onNo = "6m PTO, Other reasons for no post treatment outcome";
