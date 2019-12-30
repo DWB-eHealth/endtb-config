@@ -1140,30 +1140,30 @@ Bahmni.ConceptSet.FormConditions.rules = {      //This is a constant that Bahmni
             conditions.disable.push("HTI, Other reasons to start DAA")
         }
         return conditions;
-    },    'To what cohort or cohorts does this patient belong ( chose all that apply)': function(formName, formFieldValues){
-             var conceptToEnable = ["If other cohort, specify"]
-             debugger;
-             var conditions = {enable: [], disable: []};
-             var conditionConcept = formFieldValues['To what cohort or cohorts does this patient belong ( chose all that apply)'];
-             if(conditionConcept == 'Other, is the cohort that the patient belongs to'){
-                 conditions.enable = conceptToEnable
-             } else{
-                 conditions.disable = conceptToEnable
-             }
-             return conditions;
-         },
-         'TI, Has the Treatment with New Drugs Consent Form been explained and signed': function(formName, formFieldValues){
-             var conceptToEnable = ["TI, Has the endTB Observational Study Consent Form been explained and signed"]
-             debugger;
-             var conditions = {enable: [], disable: []};
-             var conditionConcept = formFieldValues['TI, Has the Treatment with New Drugs Consent Form been explained and signed'];
-             if(conditionConcept =='True'){
-                 conditions.enable = conceptToEnable
-             } else{
-                 conditions.disable = conceptToEnable
-             }
-             return conditions;
-         },
+    },     'To what cohort or cohorts does this patient belong ( chose all that apply)': function(formName, formFieldValues){
+                                 var conceptToEnable = ["If other cohort, specify"]
+                                 debugger;
+                                 var conditions = {enable: [], disable: []};
+                                 var conditionConcept = formFieldValues['To what cohort or cohorts does this patient belong ( chose all that apply)'];
+                                 if(conditionConcept.includes("Other, is the cohort that the patient belongs to")){
+                                     conditions.enable = conceptToEnable
+                                 } else{
+                                     conditions.disable = conceptToEnable
+                                 }
+                                 return conditions;
+                             },
+          //    'TI, Has the Treatment with New Drugs Consent Form been explained and signed': function(formName, formFieldValues){
+          //        var conceptToEnable = ["TI, Has the endTB Observational Study Consent Form been explained and signed"]
+          //        debugger;
+          //        var conditions = {enable: [], disable: []};
+          //        var conditionConcept = formFieldValues['TI, Has the Treatment with New Drugs Consent Form been explained and signed'];
+          //        if(conditionConcept =='True'){
+          //            conditions.enable = conceptToEnable
+          //        } else{
+          //            conditions.disable = conceptToEnable
+          //        }
+          //        return conditions;
+          //    },
          'TI, Has the endTB Observational Study Consent Form been explained and signed': function(formName, formFieldValues){
              var conceptToEnable = ["TI, Date of endTB consent withdrawal"]
              var conditions = {enable: [], disable: []};

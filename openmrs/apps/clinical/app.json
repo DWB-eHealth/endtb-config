@@ -73,6 +73,9 @@
       "Baseline, Last DRTB Registration ID": {
         "conciseText": true
       },
+      "To what cohort or cohorts does this patient belong ( chose all that apply)": {
+        "multiSelect": true
+      },
       "TI, Did the patient start treatment": {
         "required": true
       },
