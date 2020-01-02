@@ -3605,6 +3605,60 @@
             call CREATE_REFERENCE_MAPPING("If other cohort, specify","cohort_oth");
         </sql>
     </changeSet>
+    <changeSet id="ENDTB-201911221622" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("TI, Date of endTB consent withdrawal")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "TI, New treatment eligibility");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding TI, Date of endTB consent withdrawal to the TI, New treatment eligibility"</comment>
+        <sql>
+            set @concept_id = 0;
+            set @weight     = 0;
+            set @child1_concept_id = 0;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'TI, New treatment eligibility';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'TI, Date of endTB consent withdrawal';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,7);
+        </sql>
+    </changeSet>
+
+    <changeSet id="ENDTB-201911261457" author="Babitha">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                select count(*) from concept_answer ca
+                join
+                concept_name cn
+                on ca.concept_id = cn.concept_id
+                where ca.answer_concept IN (select concept_id from concept_name where name IN
+                ("To what cohort or cohorts does this patient belong ( chose all that apply)")
+                and concept_name_type = "FULLY_SPECIFIED")
+                AND
+                cn.concept_id IN (select concept_id from concept_name where name = "Treatment Initiation Template");
+            </sqlCheck>
+        </preConditions>
+        <comment>"Adding To What cohort or cohorts does this patient belong and If other cohort, specify to the Treatment Initiation Template"</comment>
+        <sql>
+            set @set_concept_id = 0;
+            set @concept_set_member_id = 0;
+            set @concept_set_members_id = 0;
+
+            select concept_id into @set_concept_id from concept_view where concept_full_name = 'Treatment Initiation Template';
+            select concept_id into @concept_set_member_id from concept_view where concept_full_name = 'To what cohort or cohorts does this patient belong ( chose all that apply)';
+            call add_concept_set_members (@set_concept_id,@concept_set_member_id,-2);
+
+            select concept_id into @concept_set_members_id from concept_view where concept_full_name = 'If other cohort, specify';
+            call add_concept_set_members (@set_concept_id,@concept_set_members_id,-1);
+        </sql>
+    </changeSet>
     <changeSet id="ENDTB-201911291604" author="Babitha">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
