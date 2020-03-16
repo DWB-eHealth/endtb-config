@@ -83,11 +83,6 @@
       "name": "Bacteriology Data",
       "conceptReferenceSource": "",
       "type": "bacteriology",
-      "incrementalUpdateConfig": {
-        "updateOn": "encounter_id",
-        "eventCategory": "Encounter",
-        "openmrsTableName": "encounter"
-      },
       "columnsToIgnore": [
         "Image",
         "Video"
