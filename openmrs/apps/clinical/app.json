@@ -588,8 +588,8 @@
       },
       "MTC, Month and year of treatment period" : {
         "required" : true,
-        "minYear": 2000,
-        "maxYear": 2020,
+        "minYear": 2010,
+        "maxYear": 2040,
         "allowFutureDates": true,
         "displayMonthAndYear": true
       },
@@ -898,7 +898,7 @@
       },
       "Lab, CD4 count other result": {
 	    "disableAddNotes": true
-      }, 
+      },
       "HIV VIRAL LOAD": {
         "disableAddNotes": true
       },
