@@ -4,3 +4,9 @@
     - bahmni-endtb-batch
   tags:
     - bahmni-emr-customization
+
+- hosts: bahmni-emr
+  become: yes
+  roles:
+    - { role: openmrs-ui-framework, tags: openmrs_ui_framework }
+
